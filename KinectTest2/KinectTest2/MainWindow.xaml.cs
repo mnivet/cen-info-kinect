@@ -23,12 +23,15 @@
 
         private SpeechRecognitionEngine speechRecognitionEngine;
 
+        private GesturesModule gesturesModule;
+
         private int min = 300;
 
         private int max = 400;
 
         public MainWindow()
         {
+            this.gesturesModule = new GesturesModule(this);
             InitializeComponent();
             NearDepthMinDistanceTextBox.Text = min.ToString();
             NearDepthMaxDistanceTextBox.Text = max.ToString();
@@ -55,9 +58,11 @@
 
                     this.InitKinectDisplay();
                     this.InitKinectSound();
+                    this.gesturesModule.Start(kinect);
                 }
                 else
                 {
+                    this.gesturesModule.Stop();
                     this.CleanKinectDisplay();
                     kinect.Stop();
                     kinect = null;
@@ -147,6 +152,8 @@
                             var colorImagePointOfHead = coordMapper.MapSkeletonPointToColorPoint(headLoc, ColorImageFormat.RgbResolution640x480Fps30);
                             var colorImagePointOfNeck = coordMapper.MapSkeletonPointToColorPoint(neckLoc, ColorImageFormat.RgbResolution640x480Fps30);
                             this.FollowHead(colorImagePointOfHead, colorImagePointOfNeck);
+
+                            this.gesturesModule.Follow(skeleton);
                         }
                     }
                 }
